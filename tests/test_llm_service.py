@@ -133,6 +133,11 @@ async def test_generate_future_news(llm_service, mock_news_items):
     llm_service.client.post.assert_called_once()
 
 
+import pytest
+from unittest.mock import MagicMock, patch
+from app.models.generation import TimeFrame, NewsStyle
+from app.services.llm_service import LLMService
+
 @pytest.mark.asyncio
 async def test_generate_future_news_error_handling(llm_service, mock_news_items):
     # Setup mock response with error

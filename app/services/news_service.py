@@ -6,7 +6,6 @@ from typing import List, Optional, Dict, Any
 
 import httpx
 from fastapi import Depends
-from newsapi import NewsApiClient
 
 from app.config import settings
 from app.models.news import NewsItem
@@ -16,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 class NewsService:
     def __init__(self):
-        self.api_key = settings.NEWSAPI_API_KEY
-        self.newsapi = NewsApiClient(api_key=self.api_key)
+        self.api_key = settings.NEWSDATA_API_KEY
+        self.api_base_url = "https://newsdata.io/api/1"
         self.news_cache: List[NewsItem] = []
         self.categories = settings.NEWS_CATEGORIES.split(",")
         self.sources = settings.NEWS_SOURCES.split(",")
@@ -29,26 +28,42 @@ class NewsService:
         self._load_cache()
     
     async def fetch_news(self) -> List[NewsItem]:
-        """Fetch news from NewsAPI and update cache"""
-        logger.info("Fetching news from NewsAPI...")
+        """Fetch news from NewsData.io and update cache"""
+        logger.info("Fetching news from NewsData.io...")
         
         news_items = []
         
-        # Fetch by top headlines from sources
-        for source in self.sources:
-            try:
-                top_headlines = self.newsapi.get_top_headlines(sources=source, language='en')
-                news_items.extend(self._parse_news_items(top_headlines))
-            except Exception as e:
-                logger.error(f"Error fetching top headlines for source {source}: {e}")
-        
-        # Fetch by category
-        for category in self.categories:
-            try:
-                category_news = self.newsapi.get_top_headlines(category=category, language='en')
-                news_items.extend(self._parse_news_items(category_news))
-            except Exception as e:
-                logger.error(f"Error fetching news for category {category}: {e}")
+        # Create HTTP client
+        async with httpx.AsyncClient() as client:
+            # Fetch by category
+            for category in self.categories:
+                try:
+                    params = {
+                        "apikey": self.api_key,
+                        "language": "en",
+                        "category": category,
+                    }
+                    response = await client.get(f"{self.api_base_url}/news", params=params)
+                    response.raise_for_status()
+                    data = response.json()
+                    news_items.extend(self._parse_news_items(data, category))
+                except Exception as e:
+                    logger.error(f"Error fetching news for category {category}: {e}")
+            
+            # Fetch by sources if needed
+            if self.sources and self.sources[0]:  # Only if sources are specified
+                try:
+                    params = {
+                        "apikey": self.api_key,
+                        "language": "en",
+                        "domain": ",".join(self.sources),  # NewsData.io uses domains instead of source IDs
+                    }
+                    response = await client.get(f"{self.api_base_url}/news", params=params)
+                    response.raise_for_status()
+                    data = response.json()
+                    news_items.extend(self._parse_news_items(data))
+                except Exception as e:
+                    logger.error(f"Error fetching news for sources: {e}")
         
         # Deduplicate by title
         unique_news = {}
@@ -64,28 +79,34 @@ class NewsService:
         
         return self.news_cache
     
-    def _parse_news_items(self, api_response: Dict[str, Any]) -> List[NewsItem]:
-        """Parse NewsAPI response into NewsItem objects"""
+    def _parse_news_items(self, api_response: Dict[str, Any], default_category: str = None) -> List[NewsItem]:
+        """Parse NewsData.io response into NewsItem objects"""
         news_items = []
         
-        for article in api_response.get("articles", []):
+        for article in api_response.get("results", []):
             try:
                 # Generate a unique ID
-                article_id = f"{article.get('source', {}).get('id', 'unknown')}-{hash(article.get('title', ''))}"
+                article_id = f"newsdata-{hash(article.get('title', ''))}"
                 
                 # Parse the published date
-                published_str = article.get("publishedAt")
+                published_str = article.get("pubDate")
                 if published_str:
-                    published_at = datetime.fromisoformat(published_str.replace("Z", "+00:00"))
+                    try:
+                        published_at = datetime.fromisoformat(published_str.replace("Z", "+00:00"))
+                    except ValueError:
+                        published_at = datetime.now()
                 else:
                     published_at = datetime.now()
                 
-                # Extract category from url or default to unknown
-                category = None
-                for cat in self.categories:
-                    if cat.lower() in article.get("url", "").lower() or cat.lower() in article.get("title", "").lower():
-                        category = cat
-                        break
+                # Get category from response or set default
+                category = article.get("category", [default_category])[0] if article.get("category") else default_category
+                
+                # Extract custom category from url or default to provided category
+                if not category:
+                    for cat in self.categories:
+                        if cat.lower() in article.get("link", "").lower() or cat.lower() in article.get("title", "").lower():
+                            category = cat
+                            break
                 
                 news_items.append(
                     NewsItem(
@@ -93,11 +114,11 @@ class NewsService:
                         title=article.get("title", ""),
                         description=article.get("description"),
                         content=article.get("content"),
-                        url=article.get("url", ""),
-                        image_url=article.get("urlToImage"),
-                        source=article.get("source", {}).get("name", "Unknown"),
+                        url=article.get("link", ""),
+                        image_url=article.get("image_url"),
+                        source=article.get("source_id", "Unknown"),
                         category=category,
-                        author=article.get("author"),
+                        author=article.get("creator", ["Unknown"])[0] if article.get("creator") else "Unknown",
                         published_at=published_at,
                     )
                 )
@@ -139,7 +160,16 @@ class NewsService:
     
     async def get_sources(self) -> List[str]:
         """Get available news sources"""
-        return [item.source for item in self.news_cache]
+        # Get unique sources from cache
+        sources = set(item.source for item in self.news_cache)
+        return list(sources)
+    
+    async def get_available_categories(self) -> List[str]:
+        """Get available NewsData.io categories"""
+        return [
+            "business", "entertainment", "environment", "food", "health", 
+            "politics", "science", "sports", "technology", "top", "world"
+        ]
     
     def _save_cache(self):
         """Save news cache to file"""

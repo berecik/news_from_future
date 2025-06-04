@@ -12,11 +12,11 @@ class Settings(BaseSettings):
     # CORS origins
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
     
-    # NewsAPI settings
-    NEWSAPI_API_KEY: str
-    NEWSAPI_BASE_URL: str = "https://newsapi.org/v2"
+    # NewsData.io settings
+    NEWSDATA_API_KEY: str
+    NEWSDATA_BASE_URL: str = "https://newsdata.io/api/1"
     NEWS_FETCH_INTERVAL_MINUTES: int = 30
-    NEWS_SOURCES: str = "bbc-news,cnn,reuters,associated-press,the-washington-post"
+    NEWS_SOURCES: str = ""  # NewsData.io uses domains instead of source IDs
     NEWS_CATEGORIES: str = "business,technology,science,health,politics"
     NEWS_HISTORY_DAYS: int = 1
     
@@ -27,10 +27,10 @@ class Settings(BaseSettings):
     # Storage settings
     NEWS_STORAGE_FILE: str = "data/news_cache.json"
     
-    @validator("NEWSAPI_API_KEY", pre=True)
-    def validate_newsapi_key(cls, v: Optional[str]) -> str:
+    @validator("NEWSDATA_API_KEY", pre=True)
+    def validate_newsdata_key(cls, v: Optional[str]) -> str:
         if not v:
-            raise ValueError("NEWSAPI_API_KEY is required")
+            raise ValueError("NEWSDATA_API_KEY is required")
         return v
     
     class Config:

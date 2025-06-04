@@ -89,12 +89,3 @@ deps-freeze:
 deps-wild:
 	python scripts/manage_deps.py wildcard
 	@echo "Run 'poetry update' to ensure you have the latest versions"
-
-upgrade: deps-wild update
-    poetry upgrade
-    deps-freeze:
-    @echo "Run  to ensure you have the latest versions"
-
-ollama:
-    @echo "Chose large language model from available in Ollama..."
-    poetry run python scripts/set_ollama_model.py

@@ -37,7 +37,7 @@ A FastAPI application that fetches current news from public news APIs, uses it a
 
 - Python 3.10 - 3.13
 - Poetry for dependency management
-- An API key from [NewsAPI](https://newsapi.org/)
+- An API key from [NewsData.io](https://newsdata.io/)
 - [Ollama](https://ollama.ai/) running locally with models installed
 
 ## Recommended LLM Models for NVIDIA 3090 (24GB VRAM)

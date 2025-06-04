@@ -3,6 +3,7 @@ import json
 from unittest.mock import patch, MagicMock, mock_open
 import os
 from datetime import datetime
+import httpx
 
 from app.services.news_service import NewsService
 from app.models.news import NewsItem
@@ -47,20 +48,29 @@ def mock_news_service():
 
 
 @pytest.mark.asyncio
-async def test_fetch_news(mock_news_service, mock_newsapi_response):
-    # Setup mock responses
-    mock_news_service.newsapi.get_top_headlines.return_value = mock_newsapi_response
-    
-    # Mock file operations
-    with patch("builtins.open", mock_open()) as mock_file, \
-         patch("json.dump") as mock_json_dump, \
-         patch("os.path.exists", return_value=False):
-        
-        # Call the method
-        result = await mock_news_service.fetch_news()
-        
-        # Check calls to NewsAPI
-        assert mock_news_service.newsapi.get_top_headlines.call_count > 0
+async def test_fetch_news(mock_news_service, mock_newsdata_response):
+    # Setup mock httpx client
+    with patch("httpx.AsyncClient.get") as mock_get:
+        # Create a mock response
+        mock_response = MagicMock()
+        mock_response.raise_for_status = MagicMock()
+        mock_response.json.return_value = mock_newsdata_response
+        mock_get.return_value = mock_response
+
+        # Mock file operations
+        with patch("builtins.open", mock_open()) as mock_file, \
+             patch("json.dump") as mock_json_dump, \
+             patch("os.path.exists", return_value=False):
+
+            # Call the method
+            result = await mock_news_service.fetch_news()
+
+            # Check httpx client was called
+            assert mock_get.call_count > 0
+            
+            # Check we got results
+            assert len(result) > 0
+            assert isinstance(result[0], NewsItem)
         
         # Check the results
         assert len(result) == 2
