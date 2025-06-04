@@ -1,0 +1,124 @@
+name: Publish Docs
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'app/**'
+      - 'main.py'
+      - '.github/workflows/publish-docs.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry config virtualenvs.create false
+        poetry install
+        
+    - name: Create docs directory
+      run: |
+        mkdir -p docs
+        
+    - name: Generate OpenAPI schema
+      run: |
+        python -c "from fastapi.openapi.utils import get_openapi; from main import app; import json; schema = get_openapi(title=app.title, version=app.version, description=app.description, routes=app.routes); with open('docs/openapi.json', 'w') as f: json.dump(schema, f, indent=2)"
+        
+    - name: Generate basic HTML documentation
+      run: |
+        cat > docs/index.html << EOL
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>News From Future API Documentation</title>
+          <meta charset="utf-8"/>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+          <style>
+            body { margin-top: 20px; }
+            .btn-group { margin: 20px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>News From Future API Documentation</h1>
+            <div class="btn-group">
+              <a href="swagger" class="btn btn-primary">Swagger UI</a>
+              <a href="redoc" class="btn btn-secondary">ReDoc</a>
+              <a href="openapi.json" class="btn btn-info">OpenAPI JSON</a>
+            </div>
+            <div class="alert alert-info">
+              Select one of the documentation formats above to explore the API.
+            </div>
+          </div>
+        </body>
+        </html>
+        EOL
+        
+    - name: Create Swagger UI page
+      run: |
+        cat > docs/swagger.html << EOL
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>News From Future API - Swagger UI</title>
+          <meta charset="utf-8"/>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
+        </head>
+        <body>
+          <div id="swagger-ui"></div>
+          <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+          <script>
+            window.onload = function() {
+              const ui = SwaggerUIBundle({
+                url: "openapi.json",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                  SwaggerUIBundle.presets.apis,
+                ],
+              });
+              window.ui = ui;
+            };
+          </script>
+        </body>
+        </html>
+        EOL
+        
+    - name: Create ReDoc page
+      run: |
+        cat > docs/redoc.html << EOL
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>News From Future API - ReDoc</title>
+          <meta charset="utf-8"/>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+        </head>
+        <body>
+          <redoc spec-url="openapi.json"></redoc>
+          <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+        </body>
+        </html>
+        EOL
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
+        publish_branch: gh-pages
+        force_orphan: true

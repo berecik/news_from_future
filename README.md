@@ -1,5 +1,27 @@
 # News From Future
+# News From Future
 
+![CI](https://github.com/user/news_from_future/actions/workflows/ci.yml/badge.svg)
+
+API that fetches current news and generates future news predictions using a local LLM.
+
+## Features
+
+- Fetches current news from various sources
+- Generates hypothetical future news articles based on current trends
+- Supports different time frames (day, week, month)
+- Supports different news styles (neutral, optimistic, pessimistic)
+- Built with FastAPI for high performance and easy API documentation
+- Uses local LLM through Ollama for generation
+
+## Development
+
+### Prerequisites
+
+- Python 3.10 or higher
+- Poetry (Python package manager)
+
+### Setup
 A FastAPI application that fetches current news from public news APIs, uses it as context for a local LLM running on Ollama, and generates predictive "future news" based on current trends.
 
 ## Features
