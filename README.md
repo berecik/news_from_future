@@ -1,5 +1,4 @@
 # News From Future
-# News From Future
 
 ![CI](https://github.com/user/news_from_future/actions/workflows/ci.yml/badge.svg)
 
@@ -62,7 +61,29 @@ This project includes built-in CLI commands for managing dependencies:
 
 ### Using the CLI
 ## Setup
+# Grand Lodge of Future Sight
 
+A mystical web application that reveals news from the future, styled with Masonic themes and symbolism.
+
+![Grand Lodge of Future Sight](static/images/screenshot.png)
+
+## Features
+
+- Gaze into the future with customizable time ranges
+- Beautifully styled interface with Masonic imagery and symbolism
+- Responsive design that works on desktop and mobile devices
+- Elegant animations and transitions
+
+## Installation on Arch Linux
+
+### Prerequisites
+
+- Arch Linux (or Arch-based distribution)
+- Python 3.13+
+- Poetry package manager
+- Git
+
+### Step 1: Install Dependencies
 1. Clone the repository:
 
 ```bash

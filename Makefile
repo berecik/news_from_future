@@ -75,18 +75,6 @@ clean:
 	rm -rf *.egg-info
 	@echo "Project cleaned."
 
-# Convert dependencies to wildcard versions
-wildcards:
-	@echo "Converting dependencies to wildcard versions..."
-	python scripts/use_wildcard_versions.py
-	@echo "Run 'make update' to update your lock file."
-
-# Freeze dependencies to installed versions
-freeze:
-	@echo "Freezing dependencies to current versions..."
-	python scripts/freeze_dependencies.py
-	@echo "Run 'make update' to update your lock file."
-
 # Update dependencies after changing versions
 update:
 	@echo "Updating dependencies..."
@@ -94,18 +82,15 @@ update:
 
 # Freeze dependencies to specific versions
 deps-freeze:
-	@if ! python -c "import toml" 2>/dev/null; then \
-		echo "TOML module not found, installing..."; \
-		python scripts/install_toml.py; \
-	fi
 	python scripts/manage_deps.py freeze
 	@echo "Run 'poetry update' to ensure dependencies match the frozen versions"
 
 # Set dependencies to wildcard versions
 deps-wild:
-	@if ! python -c "import toml" 2>/dev/null; then \
-		echo "TOML module not found, installing..."; \
-		python scripts/install_toml.py; \
-	fi
 	python scripts/manage_deps.py wildcard
 	@echo "Run 'poetry update' to ensure you have the latest versions"
+
+upgrade: deps-wild update
+    poetry upgrade
+    deps-freeze:
+    @echo "Run  to ensure you have the latest versions"

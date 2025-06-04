@@ -1,14 +1,17 @@
 import logging
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
-from app.routers import news, generation
+from app.routers import news, generation, frontend
 from app.services.scheduler import start_scheduler, shutdown_scheduler
 
 logging.basicConfig(
@@ -17,6 +20,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Define base directory
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -64,26 +70,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files directory
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
 # Include routers
 app.include_router(news.router, prefix="/api/news", tags=["news"])
 app.include_router(generation.router, prefix="/api/generation", tags=["generation"])
+app.include_router(frontend.router, tags=["frontend"])
 
 
-@app.get("/", tags=["status"])
-async def root():
-    """
-    Root endpoint returning basic service information.
-    """
-    return {
-        "status": "online",
-        "service": "News From Future API",
-        "version": "0.1.0",
-        "docs": "/docs",
-        "redoc": "/redoc",
-    }
-
-
-@app.get("/health", tags=["status"])
+@app.get("/api/health", tags=["status"])
 async def health_check():
     """
     Health check endpoint for monitoring service status.

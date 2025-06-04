@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.O.V.U.S O.R.D.O | Timeline Control Interface</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="noise"></div>
+    
+    <header>
+        <div class="logo-container">
+            <div class="illuminati-eye">
+                <div class="eye-top"></div>
+                <div class="eye-iris"></div>
+                <div class="eye-bottom"></div>
+                <div class="triangle"></div>
+            </div>
+            <h1>NOVUS ORDO SECLORUM</h1>
+        </div>
+        <div class="auth-section">
+            <span class="access-level">ACCESS LEVEL: DELTA</span>
+            <span class="clearance">CLEARANCE: TOP SECRET</span>
+            <div class="user-info">
+                <i class="fas fa-user-secret"></i>
+                <span>AGENT: ANONYMOUS</span>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="nav-symbols">
+            <div class="symbol" title="Eye of Providence"><i class="fas fa-eye"></i></div>
+            <div class="symbol" title="Compass and Square">
+                <svg viewBox="0 0 24 24" class="masonic-symbol">
+                    <path d="M12,2L2,12L12,22L22,12L12,2z M12,20L4,12L12,4L20,12L12,20z"></path>
+                    <path d="M12,7L7,12L12,17L17,12L12,7z"></path>
+                </svg>
+            </div>
+            <div class="symbol" title="Pyramid"><i class="fas fa-monument"></i></div>
+            <div class="symbol" title="All-Seeing Eye"><i class="far fa-eye"></i></div>
+            <div class="symbol" title="Pentagram">★</div>
+        </div>
+        <ul class="menu">
+            <li class="active" data-view="timeline"><i class="fas fa-clock"></i> Timeline Control</li>
+            <li data-view="present"><i class="fas fa-newspaper"></i> Present Events</li>
+            <li data-view="future"><i class="fas fa-crystal-ball"></i> Future Projections</li>
+            <li data-view="influence"><i class="fas fa-hand-holding-magic"></i> Influence Operations</li>
+        </ul>
+    </nav>
+    
+    <main>
+        <div class="control-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-chess-board"></i> GRAND CHESSBOARD</h2>
+                <div class="world-time">
+                    <span class="date">--/--/----</span>
+                    <span class="time">--:--:--</span>
+                    <span class="timezone">GMT</span>
+                </div>
+            </div>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Projection Timeframe</label>
+                    <select id="timeframe">
+                        <option value="DAY">24 Hours</option>
+                        <option value="WEEK" selected>7 Days</option>
+                        <option value="MONTH">30 Days</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Reality Bias</label>
+                    <select id="style">
+                        <option value="NEUTRAL" selected>Neutral Outcome</option>
+                        <option value="OPTIMISTIC">Optimistic Outcome</option>
+                        <option value="PESSIMISTIC">Pessimistic Outcome</option>
+                    </select>
+                </div>
+                <button id="generate-btn" class="glow-btn">
+                    <i class="fas fa-bolt"></i> GENERATE TIMELINE
+                </button>
+            </div>
+            
+            <div class="secret-stamp">
+                <div class="stamp-text">FOR YOUR EYES ONLY</div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <div class="timeline-container">
+                <div class="current-events">
+                    <h3><i class="fas fa-newspaper"></i> CURRENT NARRATIVES</h3>
+                    <div id="current-news" class="news-container">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Accessing classified information...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="future-events">
+                    <h3><i class="fas fa-crystal-ball"></i> PROJECTED NARRATIVES</h3>
+                    <div id="future-news" class="news-container">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Calculating future probabilities...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="footer-symbols">
+            <span class="latin-text">E PLURIBUS UNUM</span>
+            <span class="separator">•</span>
+            <span class="latin-text">ANNUIT CŒPTIS</span>
+            <span class="separator">•</span>
+            <span class="latin-text">SIC TRANSIT GLORIA MUNDI</span>
+        </div>
+        <div class="footer-info">
+            <p>SYSTEM VERSION: 23.11.33 - EYES ONLY</p>
+            <p class="access-code">ACCESS CODE: <span id="access-code">********</span></p>
+        </div>
+    </footer>
+
+    <div class="modal" id="auth-modal">
+        <div class="modal-content">
+            <div class="illuminati-eye modal-eye">
+                <div class="eye-top"></div>
+                <div class="eye-iris"></div>
+                <div class="eye-bottom"></div>
+                <div class="triangle"></div>
+            </div>
+            <h2>AUTHENTICATION REQUIRED</h2>
+            <p>Enter your credentials to access the Grand Design</p>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label>AGENT ID</label>
+                    <input type="text" id="agent-id" value="ILLUMINATED-1776" readonly>
+                </div>
+                <div class="form-group">
+                    <label>PASSPHRASE</label>
+                    <input type="password" id="passphrase" value="novus-ordo-seclorum" readonly>
+                </div>
+                <button type="submit" class="glow-btn">AUTHENTICATE</button>
+            </form>
+            <div class="auth-note">
+                <p>This system is monitored. Unauthorized access will be reported to the Council.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="news-detail-modal">
+        <div class="modal-content news-detail">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title"></h2>
+            <div class="news-meta">
+                <span id="modal-source"></span>
+                <span id="modal-date"></span>
+            </div>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
