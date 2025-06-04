@@ -1,0 +1,38 @@
+[build-system]
+requires = [ "poetry-core>=1.0.0", "python>=3.10,<3.14",]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "news-from-future"
+version = "0.1.0"
+description = "FastAPI application to generate future news based on current news using local LLM"
+readme = "README.md"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.14"
+fastapi = "^0.115.12"
+httpx = "^0.28.1"
+pydantic = "^2.11.5"
+pydantic-settings = "^2.9.1"
+newsapi-python = "^0.2.7"
+apscheduler = "^3.11.0"
+ollama = "^0.5.1"
+pytest = "^8.4.0"
+pytest-asyncio = "^1.0.0"
+httpx-sse = "^0.4.0"
+
+[tool.poetry.dependencies.uvicorn]
+extras = [ "standard",]
+version = "^0.34.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+isort = "^6.0.1"
+flake8 = "^7.2.0"
+pytest-cov = "^6.1.1"
