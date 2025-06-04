@@ -1,0 +1,48 @@
+# News From Future
+
+A FastAPI application that fetches current news from public news APIs, uses it as context for a local LLM running on Ollama, and generates predictive "future news" based on current trends.
+
+## Features
+
+- Periodically fetches current news from NewsAPI
+- Stores news data in a local cache
+- Integrates with Ollama to use local LLM models
+- Generates future news predictions based on current news context
+- REST API for retrieving news and generating predictions
+- Streaming generation support
+- Configurable news sources, categories, and update frequency
+
+## Requirements
+
+- Python 3.10 - 3.13
+- Poetry for dependency management
+- An API key from [NewsAPI](https://newsapi.org/)
+- [Ollama](https://ollama.ai/) running locally with models installed
+
+## Recommended LLM Models for NVIDIA 3090 (24GB VRAM)
+
+The application is configured to work well with the following models on an NVIDIA 3090 GPU:
+
+- `llama3` (default) - Good balance of quality and performance
+- `mistral` - Great for general text generation
+- `phi3` - Efficient model that works well with limited context
+- `mixtral:8x7b` - If you want to use a mixture-of-experts model
+- `llama3:70b-q4` - Quantized version of larger model for better quality
+
+You can configure the model in the `.env` file or choose at runtime through the API.
+# News From Future
+
+FastAPI application to generate future news based on current news using local LLM.
+
+## Dependency Management
+
+This project includes built-in CLI commands for managing dependencies:
+
+### Using the CLI
+## Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/news-from-future.git
+cd news-from-future
