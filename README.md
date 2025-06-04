@@ -73,6 +73,7 @@ A mystical web application that reveals news from the future, styled with Masoni
 - Beautifully styled interface with Masonic imagery and symbolism
 - Responsive design that works on desktop and mobile devices
 - Elegant animations and transitions
+- Integration with Ollama for local LLM inference
 
 ## Installation on Arch Linux
 
@@ -82,6 +83,7 @@ A mystical web application that reveals news from the future, styled with Masoni
 - Python 3.13+
 - Poetry package manager
 - Git
+- Ollama (for local LLM inference)
 
 ### Step 1: Install Dependencies
 1. Clone the repository:
