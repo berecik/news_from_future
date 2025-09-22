@@ -29,7 +29,7 @@ httpx-sse = "^0.4.0"
 
 [tool.poetry.dependencies.uvicorn]
 extras = [ "standard",]
-version = "^0.34.3"
+version = "^0.36.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
