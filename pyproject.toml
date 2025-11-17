@@ -23,7 +23,7 @@ pydantic-settings = "^2.9.1"
 newsapi-python = "^0.2.7"
 apscheduler = "^3.11.0"
 ollama = "^0.5.1"
-pytest = "^8.4.0"
+pytest = "^9.0.1"
 pytest-asyncio = "^1.0.0"
 httpx-sse = "^0.4.0"
 
